@@ -28,11 +28,16 @@ percent = 0
 for image in train_images:
     keypoints, descriptors = sift.detectAndCompute(image, None)
 
-    matches = bf.match(test_descriptors, descriptors)
+    matches = bf.knnMatch(test_descriptors, descriptors, 2)
 
     percent += 1
     print(f"Loading... {int(percent / len(train_images) * 100)}%")
-    scores.append(len(matches))
+
+    good_matches = []
+    for a, b in matches:
+        if a.distance < 0.75 * b.distance:
+            good_matches.append(a)
+    scores.append(len(good_matches))
 
 percent = 0
 
